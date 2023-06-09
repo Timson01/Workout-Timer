@@ -10,4 +10,6 @@ object Constants {
 
     const val TIMER_STATE_ID = "com.timur.workout_timer.timer_state"
 
+    const val ALARM_SET_TIME_ID = "com.timur.workout_timer.backgrounded_time"
+
 }

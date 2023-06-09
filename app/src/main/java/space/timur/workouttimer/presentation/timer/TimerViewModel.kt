@@ -1,13 +1,47 @@
 package space.timur.workouttimer.presentation.timer
 
-import android.app.Application
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.CountDownTimer
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import space.timur.workouttimer.utils.PrefUtil
+import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import space.timur.workouttimer.domain.repository.TimerRepository
+import space.timur.workouttimer.framework.broadcast.TimerExpiredReceiver
+import java.util.*
+import javax.inject.Inject
 
-class TimerViewModel(application: Application) : AndroidViewModel(application) {
+
+@HiltViewModel
+class TimerViewModel @Inject constructor(
+    private val timerRepository: TimerRepository,
+    private val context: Context
+) : ViewModel() {
+
+
+    fun setAlarm(context: Context, nowSeconds: Long, secondsRemaining: Long): Long {
+        val wakeUpTime = (nowSeconds + secondsRemaining) * 1000
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, TimerExpiredReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
+        timerRepository.setAlarmSetTime(nowSeconds, context)
+        return wakeUpTime
+    }
+
+    fun removeAlarm(context: Context) {
+        val intent = Intent(context, TimerExpiredReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+        timerRepository.setAlarmSetTime(0, context)
+    }
+
+    val nowSeconds: Long
+        get() = Calendar.getInstance().timeInMillis / 1000
 
     enum class TimerState {
         Stopped, Paused, Running
@@ -43,18 +77,17 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         }.start()
     }
 
-    fun onPause(){
-        if (_timerState.value == TimerState.Running){
+    fun onPause() {
+        if (_timerState.value == TimerState.Running) {
             timer.cancel()
-            //TODO: start background timer and show notification
-        }
-        else if (_timerState.value == TimerState.Paused){
+            val wakeUpTime = setAlarm(context, nowSeconds, _secondsRemaining.value ?: 0L)
+        } else if (_timerState.value == TimerState.Paused) {
             //TODO: show notification
         }
 
-        PrefUtil.setPreviousTimerLengthSeconds(_timerLengthSeconds.value ?: 0L, getApplication())
-        PrefUtil.setSecondsRemaining(_secondsRemaining.value ?: 0L, getApplication())
-        PrefUtil.setTimerState(_timerState.value ?: TimerState.Stopped, getApplication())
+        timerRepository.setPreviousTimerLengthSeconds(_timerLengthSeconds.value ?: 0L, context)
+        timerRepository.setSecondsRemaining(_secondsRemaining.value ?: 0L, context)
+        timerRepository.setTimerState(_timerState.value ?: TimerState.Stopped, context)
     }
 
     fun pauseTimer() {
@@ -68,7 +101,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun initTimer() {
-        _timerState.value = PrefUtil.getTimerState(getApplication())
+        _timerState.value = timerRepository.getTimerState(context)
         println(_timerState.value.toString())
 
         if (_timerState.value == TimerState.Stopped) {
@@ -77,13 +110,22 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
             setPreviousTimerLength()
         }
 
-        _secondsRemaining.value = if (_timerState.value == TimerState.Running || _timerState.value == TimerState.Paused) {
-            PrefUtil.getSecondsRemaining(getApplication())
-        } else {
-            _timerLengthSeconds.value
-        }
+        _secondsRemaining.value =
+            if (_timerState.value == TimerState.Running || _timerState.value == TimerState.Paused) {
+                timerRepository.getSecondsRemaining(context)
+            } else {
+                _timerLengthSeconds.value
+            }
 
-        if (_timerState.value == TimerState.Running) {
+        val alarmSetTime = timerRepository.getAlarmSetTime(context)
+        if (alarmSetTime > 0)
+            _secondsRemaining.value?.let { secondsRemaining ->
+                _secondsRemaining.value = secondsRemaining - (nowSeconds - alarmSetTime)
+            }
+
+        if((_secondsRemaining.value ?: 0L) <= 0){
+           onTimerFinished()
+        } else if (_timerState.value == TimerState.Running) {
             startTimer()
         }
     }
@@ -96,11 +138,11 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun setNewTimerLength() {
-        val lengthInMinutes = PrefUtil.getTimerLength(getApplication())
+        val lengthInMinutes = timerRepository.getTimerLength(context)
         _timerLengthSeconds.value = (lengthInMinutes * 60L)
     }
 
     private fun setPreviousTimerLength() {
-        _timerLengthSeconds.value = PrefUtil.getPreviousTimerLengthSeconds(getApplication())
+        _timerLengthSeconds.value = timerRepository.getPreviousTimerLengthSeconds(context)
     }
 }

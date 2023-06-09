@@ -6,16 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import space.timur.workouttimer.databinding.FragmentTimerBinding
 
-
+@AndroidEntryPoint
 class TimerFragment : Fragment() {
 
     private lateinit var binding: FragmentTimerBinding
-    private val viewModel: TimerViewModel by viewModels {
-        ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
-    }
+    private val viewModel: TimerViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +55,7 @@ class TimerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.initTimer()
+        viewModel.removeAlarm(requireContext())
     }
 
     override fun onPause() {
