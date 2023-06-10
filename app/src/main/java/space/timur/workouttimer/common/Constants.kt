@@ -12,4 +12,20 @@ object Constants {
 
     const val ALARM_SET_TIME_ID = "com.timur.workout_timer.backgrounded_time"
 
+    // Notifications
+
+    const val CHANNEL_ID_TIMER = "menu_timer"
+
+    const val CHANNEL_NAME_TIMER = "Timer App Timer"
+
+    const val TIMER_ID = 0
+
+    const val ACTION_STOP = "stop"
+
+    const val ACTION_PAUSE = "pause"
+
+    const val ACTION_RESUME = "resume"
+
+    const val ACTION_START = "start"
+
 }

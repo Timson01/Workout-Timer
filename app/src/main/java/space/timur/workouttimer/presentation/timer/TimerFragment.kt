@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import space.timur.workouttimer.databinding.FragmentTimerBinding
+import space.timur.workouttimer.presentation.notification.NotificationUtil
 
 @AndroidEntryPoint
 class TimerFragment : Fragment() {
@@ -56,6 +57,7 @@ class TimerFragment : Fragment() {
         super.onResume()
         viewModel.initTimer()
         viewModel.removeAlarm(requireContext())
+        NotificationUtil.hideTimerNotification(requireContext())
     }
 
     override fun onPause() {

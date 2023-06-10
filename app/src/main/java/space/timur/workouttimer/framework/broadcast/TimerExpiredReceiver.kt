@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
 import space.timur.workouttimer.domain.repository.TimerRepository
+import space.timur.workouttimer.presentation.notification.NotificationUtil
 import space.timur.workouttimer.presentation.timer.TimerViewModel
 import javax.inject.Inject
 
@@ -14,6 +15,7 @@ class TimerExpiredReceiver @Inject constructor(
 ) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        NotificationUtil.showTimerExpired(context)
         timerRepository.setTimerState(TimerViewModel.TimerState.Stopped, context)
         timerRepository.setAlarmSetTime(0, context)
     }

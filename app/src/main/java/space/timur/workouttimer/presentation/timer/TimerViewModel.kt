@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import space.timur.workouttimer.domain.repository.TimerRepository
 import space.timur.workouttimer.framework.broadcast.TimerExpiredReceiver
+import space.timur.workouttimer.presentation.notification.NotificationUtil
 import java.util.*
 import javax.inject.Inject
 
@@ -81,8 +82,9 @@ class TimerViewModel @Inject constructor(
         if (_timerState.value == TimerState.Running) {
             timer.cancel()
             val wakeUpTime = setAlarm(context, nowSeconds, _secondsRemaining.value ?: 0L)
+            NotificationUtil.showTimerRunning(context, wakeUpTime)
         } else if (_timerState.value == TimerState.Paused) {
-            //TODO: show notification
+            NotificationUtil.showTimerPaused(context)
         }
 
         timerRepository.setPreviousTimerLengthSeconds(_timerLengthSeconds.value ?: 0L, context)
