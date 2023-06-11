@@ -3,19 +3,18 @@ package space.timur.workouttimer.framework.broadcast
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.fragment.app.viewModels
 import space.timur.workouttimer.common.Constants
+import space.timur.workouttimer.data.repository.SettingsRepositoryImpl
 import space.timur.workouttimer.data.repository.TimerRepositoryImpl
-import space.timur.workouttimer.domain.repository.TimerRepository
 import space.timur.workouttimer.presentation.notification.NotificationUtil
 import space.timur.workouttimer.presentation.timer.TimerViewModel
-import javax.inject.Inject
 
 class TimerNotificationActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val timerRepository = TimerRepositoryImpl()
-        val viewModel = TimerViewModel(timerRepository, context)
+        val settingsRepository = SettingsRepositoryImpl()
+        val viewModel = TimerViewModel(timerRepository, settingsRepository, context)
         when (intent.action){
             Constants.ACTION_STOP -> {
                 viewModel.removeAlarm(context)
@@ -41,8 +40,7 @@ class TimerNotificationActionReceiver : BroadcastReceiver() {
                 NotificationUtil.showTimerRunning(context, wakeUpTime)
             }
             Constants.ACTION_START -> {
-                val minutesRemaining = timerRepository.getTimerLength(context)
-                val secondsRemaining = minutesRemaining * 60L
+                val secondsRemaining = settingsRepository.getRoundTime(context)
                 val wakeUpTime = viewModel.setAlarm(context, viewModel.nowSeconds, secondsRemaining)
                 timerRepository.setTimerState(TimerViewModel.TimerState.Running, context)
                 timerRepository.setSecondsRemaining(secondsRemaining, context)

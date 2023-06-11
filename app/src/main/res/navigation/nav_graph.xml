@@ -9,5 +9,13 @@
         android:id="@+id/timerFragment"
         android:name="space.timur.workouttimer.presentation.timer.TimerFragment"
         android:label="fragment_timer"
-        tools:layout="@layout/fragment_timer" />
+        tools:layout="@layout/fragment_timer" >
+        <action
+            android:id="@+id/action_timerFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="space.timur.workouttimer.presentation.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>

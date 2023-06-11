@@ -28,4 +28,12 @@ object Constants {
 
     const val ACTION_START = "start"
 
+    // Settings
+
+    const val ROUND_TIME_ID = "round_time_preference"
+
+    const val REST_TIME_ID = "rest_time_preference"
+
+    const val NUMBER_OF_ROUNDS_ID = "number_of_rounds_preference"
+
 }

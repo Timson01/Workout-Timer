@@ -16,7 +16,6 @@ import space.timur.workouttimer.R
 import space.timur.workouttimer.common.Constants
 import space.timur.workouttimer.framework.broadcast.TimerNotificationActionReceiver
 import space.timur.workouttimer.presentation.MainActivity
-import space.timur.workouttimer.presentation.timer.TimerFragment
 import java.text.SimpleDateFormat
 import java.util.*
 

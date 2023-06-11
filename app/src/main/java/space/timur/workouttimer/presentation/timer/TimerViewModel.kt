@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import space.timur.workouttimer.domain.repository.SettingsRepository
 import space.timur.workouttimer.domain.repository.TimerRepository
 import space.timur.workouttimer.framework.broadcast.TimerExpiredReceiver
 import space.timur.workouttimer.presentation.notification.NotificationUtil
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TimerViewModel @Inject constructor(
     private val timerRepository: TimerRepository,
+    private val settingsRepository: SettingsRepository,
     private val context: Context
 ) : ViewModel() {
 
@@ -58,10 +60,16 @@ class TimerViewModel @Inject constructor(
     private val _timerLengthSeconds = MutableLiveData<Long>()
     val timerLengthSeconds: LiveData<Long> = _timerLengthSeconds
 
+    private val _numberOfRounds = MutableLiveData<Int>()
+    val numberOfRounds: LiveData<Int> = _numberOfRounds
+
+    private var _restTime = false
+
     init {
         _timerState.value = TimerState.Stopped
         _secondsRemaining.value = 0L
         _timerLengthSeconds.value = 0L
+        _numberOfRounds.value = 0
     }
 
     fun startTimer() {
@@ -99,15 +107,16 @@ class TimerViewModel @Inject constructor(
 
     fun stopTimer() {
         timer.cancel()
+        settingsRepository.setNumberOfRounds(0, context)
         onTimerFinished()
     }
 
     fun initTimer() {
         _timerState.value = timerRepository.getTimerState(context)
-        println(_timerState.value.toString())
 
         if (_timerState.value == TimerState.Stopped) {
             setNewTimerLength()
+            setNewNumberOfRounds()
         } else {
             setPreviousTimerLength()
         }
@@ -133,15 +142,37 @@ class TimerViewModel @Inject constructor(
     }
 
     private fun onTimerFinished() {
-        _timerState.value = TimerState.Stopped
-        setNewTimerLength()
+        if(_numberOfRounds.value!! > 0){
+            if(!_restTime){
+                _numberOfRounds.value = _numberOfRounds.value!! - 1
+                val restTime = settingsRepository.getRestTime(context)
+                _secondsRemaining.value = restTime
+            } else {
+                val roundTime = settingsRepository.getRoundTime(context)
+                _secondsRemaining.value = roundTime
+            }
+            _restTime = !_restTime
+            startTimer()
+        } else {
+            _timerState.value = TimerState.Stopped
+            setNewTimerLength()
+            setNewNumberOfRounds()
+            _secondsRemaining.value = _timerLengthSeconds.value
+        }
+    }
 
-        _secondsRemaining.value = _timerLengthSeconds.value
+    private fun setNewNumberOfRounds(){
+        val number = settingsRepository.getNumberOfRounds(context)
+        _numberOfRounds.value = number
+    }
+
+    fun getNumberOfRounds(): Int{
+        return settingsRepository.getNumberOfRounds(context)
     }
 
     private fun setNewTimerLength() {
-        val lengthInMinutes = timerRepository.getTimerLength(context)
-        _timerLengthSeconds.value = (lengthInMinutes * 60L)
+        val lengthInSeconds = settingsRepository.getRoundTime(context)
+        _timerLengthSeconds.value = lengthInSeconds
     }
 
     private fun setPreviousTimerLength() {

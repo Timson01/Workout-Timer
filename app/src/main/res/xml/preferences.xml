@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Timer Preferences">
+
+    <Preference
+        android:key="round_time_preference"
+        android:title="Round time"
+        android:summary="Tap to select time"/>
+
+    <Preference
+        android:key="rest_time_preference"
+        android:title="Rest time"
+        android:summary="Tap to select time"/>
+
+    <Preference
+        android:key="number_of_rounds_preference"
+        android:title="Number of rounds"
+        android:summary="Select a number between 0 and 100"/>
+
+</androidx.preference.PreferenceScreen>

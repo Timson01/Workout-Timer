@@ -6,7 +6,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import space.timur.workouttimer.data.repository.SettingsRepositoryImpl
 import space.timur.workouttimer.data.repository.TimerRepositoryImpl
+import space.timur.workouttimer.domain.repository.SettingsRepository
 import space.timur.workouttimer.domain.repository.TimerRepository
 import javax.inject.Singleton
 
@@ -24,6 +26,12 @@ object AppModule {
     @Singleton
     fun timerRepository(): TimerRepository {
         return TimerRepositoryImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun settingsRepository(): SettingsRepository {
+        return SettingsRepositoryImpl()
     }
 
 }

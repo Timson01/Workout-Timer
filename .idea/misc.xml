@@ -10,7 +10,11 @@
         <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/drawable/ic_play_arrow.xml" value="0.164" />
         <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/drawable/ic_timer.xml" value="0.164" />
         <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/layout/activity_main.xml" value="0.2359375" />
+        <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/layout/dialog_number_of_rounds_picker.xml" value="0.20436083796494228" />
+        <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/layout/dialog_time_picker.xml" value="0.20436083796494228" />
         <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/layout/fragment_timer.xml" value="0.25" />
+        <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/layout/preference_widget_material_time.xml" value="0.20436083796494228" />
+        <entry key="..\:/Android Studio Projects/Production/WorkoutTimer/app/src/main/res/xml/preferences.xml" value="0.264" />
       </map>
     </option>
   </component>

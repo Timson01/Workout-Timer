@@ -3,14 +3,13 @@ package space.timur.workouttimer.data.repository
 import android.content.Context
 import space.timur.workouttimer.common.Constants
 import space.timur.workouttimer.common.Constants.ALARM_SET_TIME_ID
+import space.timur.workouttimer.common.Constants.NUMBER_OF_ROUNDS_ID
+import space.timur.workouttimer.common.Constants.REST_TIME_ID
+import space.timur.workouttimer.common.Constants.ROUND_TIME_ID
 import space.timur.workouttimer.domain.repository.TimerRepository
 import space.timur.workouttimer.presentation.timer.TimerViewModel
 
 class TimerRepositoryImpl : TimerRepository {
-
-    override fun getTimerLength(context: Context): Int {
-        return 1
-    }
 
     override fun getPreviousTimerLengthSeconds(context: Context): Long {
         val preferences = context.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -57,4 +56,5 @@ class TimerRepositoryImpl : TimerRepository {
         editor.putLong(ALARM_SET_TIME_ID, time)
         editor.apply()
     }
+
 }

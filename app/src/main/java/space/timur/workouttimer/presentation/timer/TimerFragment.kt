@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import space.timur.workouttimer.R
 import space.timur.workouttimer.databinding.FragmentTimerBinding
 import space.timur.workouttimer.presentation.notification.NotificationUtil
 
@@ -39,12 +41,20 @@ class TimerFragment : Fragment() {
             viewModel.stopTimer()
         }
 
+        binding.settingsButton.setOnClickListener{
+            findNavController().navigate(R.id.action_timerFragment_to_settingsFragment)
+        }
+
         viewModel.timerState.observe(viewLifecycleOwner) { timerState ->
             updateButtons(timerState)
         }
 
         viewModel.secondsRemaining.observe(viewLifecycleOwner) { secondsRemaining ->
             updateCountdownUI(secondsRemaining)
+        }
+
+        viewModel.numberOfRounds.observe(viewLifecycleOwner){
+            updateNumberOfRoundUI(it)
         }
 
         viewModel.timerLengthSeconds.observe(viewLifecycleOwner) { timerLengthSeconds ->
@@ -65,12 +75,17 @@ class TimerFragment : Fragment() {
         viewModel.onPause()
     }
 
+    private fun updateNumberOfRoundUI(numberReminder: Int) {
+        val numberOfRounds = viewModel.getNumberOfRounds()
+        binding.textViewNumberOfRounds.text = "${numberReminder}/${numberOfRounds}"
+    }
+
     private fun updateCountdownUI(secondsRemaining: Long) {
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
         val secondsStr = secondsInMinuteUntilFinished.toString()
         binding.textViewCountdown.text = "$minutesUntilFinished:${if (secondsStr.length == 2) secondsStr else "0" + secondsStr}"
-        binding.progressCountdown.progress = (viewModel.timerLengthSeconds.value ?: 0 - secondsRemaining).toInt()
+        binding.progressCountdown.progress = (viewModel.timerLengthSeconds.value!! - secondsRemaining).toInt()
     }
 
     private fun updateButtons(timerState: TimerViewModel.TimerState) {

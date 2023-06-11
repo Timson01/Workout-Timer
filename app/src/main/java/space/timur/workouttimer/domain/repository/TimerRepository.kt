@@ -5,8 +5,6 @@ import space.timur.workouttimer.presentation.timer.TimerViewModel
 
 interface TimerRepository {
 
-    fun getTimerLength(context: Context): Int
-
     fun getPreviousTimerLengthSeconds(context: Context): Long
 
     fun setPreviousTimerLengthSeconds(seconds: Long, context: Context)
