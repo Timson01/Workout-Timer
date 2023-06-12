@@ -12,7 +12,11 @@
         tools:layout="@layout/fragment_timer" >
         <action
             android:id="@+id/action_timerFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/slide_up"
+            app:exitAnim="@anim/slide_down"
+            app:popEnterAnim="@anim/slide_pop_up"
+            app:popExitAnim="@anim/slide_pop_down" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
