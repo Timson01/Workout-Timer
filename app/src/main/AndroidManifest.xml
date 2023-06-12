@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="space.timur.workouttimer">
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:name=".WorkoutTimerApplication"
         android:allowBackup="true"
@@ -28,7 +30,8 @@
         <receiver
             android:name=".framework.broadcast.TimerExpiredReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            tools:ignore="Instantiatable" />
 
         <activity
             android:name=".presentation.MainActivity"

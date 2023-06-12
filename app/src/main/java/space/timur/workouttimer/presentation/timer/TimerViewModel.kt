@@ -4,11 +4,13 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import space.timur.workouttimer.R
 import space.timur.workouttimer.domain.repository.SettingsRepository
 import space.timur.workouttimer.domain.repository.TimerRepository
 import space.timur.workouttimer.framework.broadcast.TimerExpiredReceiver
@@ -64,6 +66,7 @@ class TimerViewModel @Inject constructor(
     val numberOfRounds: LiveData<Int> = _numberOfRounds
 
     private var _restTime = false
+    private var _mediaPlayer: MediaPlayer? = null
 
     init {
         _timerState.value = TimerState.Stopped
@@ -72,11 +75,19 @@ class TimerViewModel @Inject constructor(
         _numberOfRounds.value = 0
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        _mediaPlayer?.release()
+        _mediaPlayer = null
+    }
+
     fun startTimer() {
         _timerState.value = TimerState.Running
+        playSound()
 
         timer = object : CountDownTimer(_secondsRemaining.value!! * 1000, 1000) {
             override fun onFinish() {
+                playSound()
                 onTimerFinished()
             }
 
@@ -107,8 +118,10 @@ class TimerViewModel @Inject constructor(
 
     fun stopTimer() {
         timer.cancel()
-        settingsRepository.setNumberOfRounds(0, context)
-        onTimerFinished()
+        _timerState.value = TimerState.Stopped
+        setNewTimerLength()
+        setNewNumberOfRounds()
+        _secondsRemaining.value = _timerLengthSeconds.value
     }
 
     fun initTimer() {
@@ -177,5 +190,10 @@ class TimerViewModel @Inject constructor(
 
     private fun setPreviousTimerLength() {
         _timerLengthSeconds.value = timerRepository.getPreviousTimerLengthSeconds(context)
+    }
+
+    private fun playSound() {
+        _mediaPlayer = MediaPlayer.create(context, R.raw.timer_sound)
+        _mediaPlayer?.start()
     }
 }

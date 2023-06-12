@@ -58,13 +58,13 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClic
 
     private fun updateSummary() {
         val roundTimePreference = findPreference<Preference>("round_time_preference")
-        roundTimePreference?.summary = "${viewModel.getRoundTime()}"
+        roundTimePreference?.summary = formatTime(viewModel.getRoundTime().toInt())
 
         val restTimePreference = findPreference<Preference>("rest_time_preference")
-        restTimePreference?.summary = "${viewModel.getRestTime()}"
+        restTimePreference?.summary = formatTime(viewModel.getRestTime().toInt())
 
         val numberOfRoundsPreference = findPreference<Preference>("number_of_rounds_preference")
-        numberOfRoundsPreference?.summary = "${viewModel.getNumberOfRounds()}"
+        numberOfRoundsPreference?.summary = formatTime(viewModel.getNumberOfRounds())
     }
 
     private fun showTimePickerDialog(button: SettingsButton) {
